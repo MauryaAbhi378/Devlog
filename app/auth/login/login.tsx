@@ -17,6 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
@@ -28,9 +31,19 @@ export default function LoginForm() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
+  const router = useRouter();
 
   const onSubmit = async (data: LoginFormValues) => {
-    console.log(data);
+    const { error } = await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+    });
+    if (error) {
+      toast.error(error.message ?? "Failed to sign in");
+    } else {
+      toast.success("Signed in successfully!");
+      router.push("/");
+    }
   };
 
   return (

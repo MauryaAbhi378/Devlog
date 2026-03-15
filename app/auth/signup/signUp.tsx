@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
@@ -29,13 +31,20 @@ export default function SignUpForm() {
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
   });
+  const router = useRouter();
 
   const onSubmit = async (data: SignUpFormValues) => {
-    await authClient.signUp.email({
+    const { error } = await authClient.signUp.email({
       name: data.name,
       email: data.email,
       password: data.password,
-    })
+    });
+    if (error) {
+      toast.error(error.message ?? "Failed to create account");
+    } else {
+      toast.success("Account created successfully!");
+      router.push("/");
+    }
   };
 
   return (
