@@ -1,6 +1,7 @@
 import { mutation } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { authComponent } from "./betterAuth/auth";
+import { query } from "./_generated/server";
 
 // Create a new task with the given text
 export const createPost = mutation({
@@ -10,7 +11,7 @@ export const createPost = mutation({
 
     if (!user) {
       throw new ConvexError("Not authenticated");
-    } 
+    }
 
     const blogArticle = await ctx.db.insert("posts", {
       title: args.title,
@@ -19,5 +20,13 @@ export const createPost = mutation({
     });
 
     return blogArticle;
+  },
+});
+
+export const getBlogs = query({
+  args: {},
+  handler: async (ctx) => {
+    const posts = await ctx.db.query("posts").order("desc").collect();
+    return posts;
   },
 });
