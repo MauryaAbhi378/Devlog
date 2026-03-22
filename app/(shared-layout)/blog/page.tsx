@@ -102,7 +102,7 @@ async function ListBlog() {
             <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/10 to-transparent" />
           </div>
 
-          <CardHeader className="space-y-3 px-5 pt-5">
+          <CardHeader className="flex-1 space-y-3 px-5 pt-5">
             <CardTitle className="text-2xl font-semibold tracking-tight text-pretty">
               {blog.title}
             </CardTitle>
@@ -111,7 +111,7 @@ async function ListBlog() {
             </CardDescription>
           </CardHeader>
 
-          <CardFooter className="border-white/10 bg-transparent p-5 pt-0">
+          <CardFooter className="border-t-0 bg-transparent p-5 pt-0">
             <Button asChild className="w-full rounded-xl">
               <Link href={`/blog/${blog._id}`}>Read more</Link>
             </Button>
