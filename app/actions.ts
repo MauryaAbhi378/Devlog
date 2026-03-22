@@ -1,8 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createBlogSchema } from "@/app/schemas/blog";
+import { commentSchema } from "@/app/schemas/comment";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { fetchAuthMutation } from "@/lib/auth-server";
@@ -44,5 +44,36 @@ export async function createPostAction(
   } catch (error) {
     console.error(error);
     throw new Error("Failed to create post.");
+  }
+}
+
+export type CommentActionState = { error?: string; success?: boolean };
+
+export async function createCommentAction(
+  _prevState: CommentActionState,
+  formData: FormData,
+): Promise<CommentActionState> {
+  const postId = formData.get("postId") as Id<"posts">;
+  const content = formData.get("content") as string;
+
+  const parsed = commentSchema.safeParse({ postId, content });
+  if (!parsed.success) {
+    return {
+      error:
+        parsed.error.flatten().fieldErrors.content?.[0] ?? "Invalid input.",
+    };
+  }
+
+  try {
+    await fetchAuthMutation(api.comments.postComment, {
+      postId: parsed.data.postId,
+      content: parsed.data.content,
+    });
+    return { success: true };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
+    return { error: "Failed to post comment." };
   }
 }

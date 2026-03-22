@@ -33,12 +33,16 @@ export const getBlogs = query({
     const posts = await ctx.db.query("posts").order("desc").collect();
 
     return Promise.all(
-      posts.map(async (post) => ({
-        ...post,
-        imageUrl: post.imageStorageId
-          ? await ctx.storage.getUrl(post.imageStorageId)
-          : null,
-      })),
+      posts.map(async (post) => {
+        const author = await authComponent.getAnyUserById(ctx, post.authorId);
+        return {
+          ...post,
+          imageUrl: post.imageStorageId
+            ? await ctx.storage.getUrl(post.imageStorageId)
+            : null,
+          authorName: author?.name ?? "Unknown",
+        };
+      }),
     );
   },
 });
