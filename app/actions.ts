@@ -53,10 +53,12 @@ export async function createCommentAction(
   _prevState: CommentActionState,
   formData: FormData,
 ): Promise<CommentActionState> {
-  const postId = formData.get("postId") as Id<"posts">;
-  const content = formData.get("content") as string;
+  const rawData: z.infer<typeof commentSchema> = {
+    postId: formData.get("postId") as Id<"posts">,
+    content: formData.get("content") as string,
+  };
 
-  const parsed = commentSchema.safeParse({ postId, content });
+  const parsed = commentSchema.safeParse(rawData);
   if (!parsed.success) {
     return {
       error:
