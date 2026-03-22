@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
+import CommentSection from "@/components/web/CommentSection";
 
 type BlogDetailPageProps = {
   params: Promise<{
@@ -47,7 +48,14 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         <CardHeader className="space-y-4 px-6 py-8 md:px-10">
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-              Blog Article
+              By {blog.authorName}
+            </span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+              {new Date(blog._creationTime).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
             </span>
           </div>
           <CardTitle className="max-w-3xl text-3xl font-semibold tracking-tight text-balance md:text-5xl">
@@ -65,6 +73,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
               <Link href="/blog">Back to all posts</Link>
             </Button>
           </div>
+
+          <CommentSection postId={blog._id} />
         </CardContent>
       </Card>
     </section>
