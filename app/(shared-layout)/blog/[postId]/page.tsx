@@ -7,12 +7,10 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
-import { getBlogImage } from "@/lib/blog-images";
 
 type BlogDetailPageProps = {
   params: Promise<{
@@ -35,12 +33,13 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       <Card className="overflow-hidden border border-white/10 bg-card/80 py-0 shadow-xl shadow-black/10 backdrop-blur">
         <div className="relative aspect-21/9 min-h-72 w-full overflow-hidden">
           <Image
-            src={getBlogImage(blogIndex)}
+            src={blog.imageUrl ?? "https://source.unsplash.com/random/?coding"}
             alt={blog.title}
             fill
             className="object-cover"
             sizes="100vw"
             priority
+            unoptimized={Boolean(blog.imageUrl)}
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
         </div>

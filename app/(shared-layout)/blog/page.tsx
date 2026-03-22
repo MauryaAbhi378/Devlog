@@ -12,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getBlogImage } from "@/lib/blog-images";
 import { Suspense } from "react";
 
 export default function BlogPage() {
@@ -93,12 +92,13 @@ async function ListBlog() {
         >
           <div className="relative aspect-16/10 overflow-hidden">
             <Image
-              src={getBlogImage(index)}
+              src={blog.imageUrl ?? "https://source.unsplash.com/random/?coding"}
               alt={blog.title}
               fill
               className="object-cover transition-transform duration-500 hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
               priority={index < 3}
+              unoptimized={Boolean(blog.imageUrl)}
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/55 via-black/10 to-transparent" />
           </div>

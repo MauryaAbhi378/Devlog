@@ -1,5 +1,7 @@
 "use client"
 
+import Image from "next/image"
+import { ChangeEvent, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -16,42 +18,82 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { useMutation } from "convex/react"
-import { api } from "@/convex/_generated/api"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+import { createPostAction } from "@/app/actions"
 
 type CreateBlogData = z.infer<typeof createBlogSchema>
 
 export default function CreatePage() {
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
+  const [imageInputKey, setImageInputKey] = useState(0)
+
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CreateBlogData>({
     resolver: zodResolver(createBlogSchema),
   })
-  const mutation = useMutation(api.posts.createPost)
   const router = useRouter()
+
+  useEffect(() => {
+    return () => {
+      if (imagePreviewUrl) {
+        URL.revokeObjectURL(imagePreviewUrl)
+      }
+    }
+  }, [imagePreviewUrl])
 
   async function onSubmit(data: CreateBlogData) {
     try {
-      await mutation({
-        title: data.title,
-        description: data.content,
-      })
+      const postId = await createPostAction(data)
+
       toast.success("Post created!", {
         description: "Your blog article has been published.",
       })
+      
       reset()
-      router.push("/")
-    } catch {
+      setImageFile(null)
+      if (imagePreviewUrl) {
+        URL.revokeObjectURL(imagePreviewUrl)
+      }
+      setImagePreviewUrl(null)
+      setImageInputKey((currentKey) => currentKey + 1)
+      router.push(`/blog/${postId}`)
+    } catch (error) {
+      const description =
+        error instanceof Error ? error.message : "Failed to create the post."
+
       toast.error("Something went wrong", {
-        description: "Failed to create the post. Please try again.",
+        description,
       })
     }
+  }
+
+  function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null
+
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl)
+    }
+
+    setImageFile(file)
+    if (file) {
+      setImagePreviewUrl(URL.createObjectURL(file))
+      setValue("image", file, { shouldDirty: true, shouldValidate: true })
+      return
+    }
+
+    setImagePreviewUrl(null)
+    setValue("image", undefined as never, {
+      shouldDirty: true,
+      shouldValidate: true,
+    })
   }
 
   return (
@@ -97,6 +139,43 @@ export default function CreatePage() {
                 <p className="text-xs text-destructive">
                   {errors.content.message}
                 </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="coverImage">Cover Image</Label>
+              <Input
+                key={imageInputKey}
+                id="coverImage"
+                type="file"
+                accept="image/*"
+                aria-invalid={!!errors.image}
+                onChange={handleImageChange}
+              />
+              <input type="hidden" {...register("image")} />
+              <p className="text-xs text-muted-foreground">
+                Select a cover image for your post.
+              </p>
+              {imagePreviewUrl && (
+                <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/30">
+                  <div className="relative aspect-16/10 w-full">
+                    <Image
+                      src={imagePreviewUrl}
+                      alt="Selected cover preview"
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                </div>
+              )}
+              {errors.image && (
+                <p className="text-xs text-destructive">{errors.image.message}</p>
+              )}
+              {imageFile && (
+                <div className="rounded-md border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                  Selected: <span className="font-medium text-foreground">{imageFile.name}</span>
+                </div>
               )}
             </div>
 
