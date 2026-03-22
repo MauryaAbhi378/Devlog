@@ -80,7 +80,6 @@ function BlogListLoader() {
 }
 
 async function ListBlog() {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
   const blogs = await fetchQuery(api.posts.getBlogs, {});
 
   return (
@@ -112,7 +111,7 @@ async function ListBlog() {
             </CardDescription>
           </CardHeader>
 
-          <CardFooter className="border-t border-white/10 bg-transparent p-5 pt-0">
+          <CardFooter className="border-white/10 bg-transparent p-5 pt-0">
             <Button asChild className="w-full rounded-xl">
               <Link href={`/blog/${blog._id}`}>Read more</Link>
             </Button>

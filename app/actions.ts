@@ -45,6 +45,4 @@ export async function createPostAction(
     console.error(error);
     throw new Error("Failed to create post.");
   }
-
-  revalidatePath("/blog");
 }
