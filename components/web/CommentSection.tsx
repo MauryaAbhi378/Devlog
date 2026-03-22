@@ -100,23 +100,6 @@ export default function CommentSection({ postId }: CommentSectionProps) {
 
       {/* Comments List */}
       <div className="space-y-3">
-        {comments === undefined && (
-          <>
-            {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                className="animate-pulse border border-white/10 bg-card/80 backdrop-blur"
-              >
-                <CardContent className="py-4">
-                  <div className="mb-2 h-3 w-28 rounded bg-muted" />
-                  <div className="h-3 w-full rounded bg-muted" />
-                  <div className="mt-1 h-3 w-3/4 rounded bg-muted" />
-                </CardContent>
-              </Card>
-            ))}
-          </>
-        )}
-
         {comments?.length === 0 && (
           <p className="text-sm text-muted-foreground">
             No comments yet. Be the first to comment!
