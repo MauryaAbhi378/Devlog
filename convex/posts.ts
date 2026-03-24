@@ -47,6 +47,34 @@ export const getBlogs = query({
   },
 });
 
+export const getPaginatedBlogs = query({
+  args: {
+    page: v.number(),
+    limit: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const posts = await ctx.db.query("posts").order("desc").collect();
+    const total = posts.length;
+    const skip = (args.page - 1) * args.limit;
+    const paginated = posts.slice(skip, skip + args.limit);
+
+    const items = await Promise.all(
+      paginated.map(async (post) => {
+        const author = await authComponent.getAnyUserById(ctx, post.authorId);
+        return {
+          ...post,
+          imageUrl: post.imageStorageId
+            ? await ctx.storage.getUrl(post.imageStorageId)
+            : null,
+          authorName: author?.name ?? "Unknown",
+        };
+      }),
+    );
+
+    return { items, total };
+  },
+});
+
 export const generateImgaeUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
