@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 import { api } from "@/convex/_generated/api";
@@ -24,29 +24,11 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const comments = useQuery(api.comments.getCommentsByPostId, { postId });
   const { data: session } = authClient.useSession();
   const formRef = useRef<HTMLFormElement>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [state, formAction, isPending] = useActionState(
     createCommentAction,
     initialState,
   );
-
-  // When state.success becomes true, show message then hide after 3s
-  useEffect(() => {
-    if (!state.success) return;
-
-    // Clear any existing timer
-    if (timerRef.current) clearTimeout(timerRef.current);
-
-    timerRef.current = setTimeout(() => {
-      setShowSuccess(false);
-    }, 3000);
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [state.success]);
 
   useEffect(() => {
     if (state.success) {
@@ -93,7 +75,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
               {state.error && (
                 <p className="text-sm text-destructive">{state.error}</p>
               )}
-              {state.success && showSuccess === false ? null : (
+              {state.success && (
                 <p className="text-sm text-green-500">Comment posted!</p>
               )}
               <Button type="submit" size="sm" disabled={isPending}>
