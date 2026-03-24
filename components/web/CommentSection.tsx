@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 import { api } from "@/convex/_generated/api";
@@ -24,6 +24,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const comments = useQuery(api.comments.getCommentsByPostId, { postId });
   const { data: session } = authClient.useSession();
   const formRef = useRef<HTMLFormElement>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [state, formAction, isPending] = useActionState(
     createCommentAction,
@@ -31,9 +32,14 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   );
 
   useEffect(() => {
-    if (state.success) {
-      formRef.current?.reset();
-    }
+    if (!state.success) return;
+    formRef.current?.reset();
+    const show = setTimeout(() => setShowSuccess(true), 0);
+    const hide = setTimeout(() => setShowSuccess(false), 3000);
+    return () => {
+      clearTimeout(show);
+      clearTimeout(hide);
+    };
   }, [state.success]);
 
   return (
@@ -75,7 +81,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
               {state.error && (
                 <p className="text-sm text-destructive">{state.error}</p>
               )}
-              {state.success && (
+              {showSuccess && (
                 <p className="text-sm text-green-500">Comment posted!</p>
               )}
               <Button type="submit" size="sm" disabled={isPending}>
