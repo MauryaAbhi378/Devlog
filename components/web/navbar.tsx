@@ -23,7 +23,7 @@ export function Navbar() {
     <nav className="flex items-center justify-between px-6 py-4">
       <div className="flex items-center gap-8">
         <Link href="/" className="text-xl font-bold">
-          Next<span className="text-blue-500">Pro</span>
+          Dev<span className="text-blue-500">Logs</span>
         </Link>
         <div className="flex items-center gap-4">
           <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
