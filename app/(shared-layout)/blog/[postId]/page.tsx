@@ -19,6 +19,25 @@ type BlogDetailPageProps = {
   }>;
 };
 
+export async function generateMetadata({ params }: BlogDetailPageProps) {
+  const {postId} = await params;
+  const blogs = await fetchQuery(api.posts.getBlogs, {});
+  const blogIndex = blogs.findIndex((blog) => blog._id === postId);
+  const blog = blogIndex >= 0 ? blogs[blogIndex] : null; 
+
+  if (!blog) {
+    return {
+      title: "Blog Post Not Found",
+    };
+  }
+
+  return {
+    title: `Devlog | ${blog.title}`,
+    description: blog.description,
+  };
+
+}
+
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { postId } = await params;
   const blogs = await fetchQuery(api.posts.getBlogs, {});

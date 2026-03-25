@@ -22,8 +22,13 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Suspense } from "react";
+import { Metadata } from "next";
 
 const POSTS_PER_PAGE = 3;
+
+export const metadata: Metadata = {
+  title: 'Devlog | Blogs',
+}
 
 export default async function BlogPage({
   searchParams,
