@@ -83,9 +83,10 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         </CardHeader>
 
         <CardContent className="px-6 pb-10 md:px-10">
-          <div className="max-w-3xl space-y-6 text-base leading-8 text-foreground/90">
-            <p>{blog.description}</p>
-          </div>
+          <div
+            className="prose prose-neutral dark:prose-invert max-w-3xl text-foreground/90"
+            dangerouslySetInnerHTML={{ __html: blog.description }}
+          />
 
           <div className="mt-10">
             <Button asChild variant="outline">

@@ -6,7 +6,6 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -124,12 +123,13 @@ async function ListBlog({ page }: { page: number }) {
             </div>
 
             <CardHeader className="flex-1 space-y-3 px-5 pt-5">
-              <CardTitle className="text-2xl font-semibold tracking-tight text-pretty">
+              <CardTitle className="line-clamp-1 text-2xl font-semibold tracking-tight">
                 {blog.title}
               </CardTitle>
-              <CardDescription className="line-clamp-3 text-sm leading-6 text-muted-foreground">
-                {blog.description}
-              </CardDescription>
+              <div
+                className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 max-h-20 overflow-hidden text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: blog.description }}
+              />
             </CardHeader>
 
             <CardFooter className="border-t-0 bg-transparent p-5 pt-0">

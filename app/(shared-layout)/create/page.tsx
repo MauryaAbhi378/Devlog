@@ -12,13 +12,13 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { createPostAction } from "@/app/actions";
+import RichTextEditor from "@/components/web/RichTextEditor";
 
 type CreateBlogData = z.infer<typeof createBlogSchema>;
 
@@ -32,9 +32,11 @@ export default function CreatePage() {
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CreateBlogData>({
     resolver: zodResolver(createBlogSchema),
+    mode: "onSubmit", // Validate on submit
   });
   const router = useRouter();
 
@@ -48,7 +50,11 @@ export default function CreatePage() {
 
   async function onSubmit(data: CreateBlogData) {
     try {
-      const postId = await createPostAction(data);
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("content", data.content);
+      formData.append("image", data.image);
+      const postId = await createPostAction(formData);
 
       toast.success("Post created!", {
         description: "Your blog article has been published.",
@@ -127,12 +133,15 @@ export default function CreatePage() {
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="content">Content</Label>
-              <Textarea
-                id="content"
-                placeholder="Super cool blog content"
-                className="min-h-40 resize-none"
-                aria-invalid={!!errors.content}
-                {...register("content")}
+              <RichTextEditor
+                value={watch("content") ?? ""}
+                onChange={(html) => {
+                  setValue("content", html, {
+                    shouldDirty: true,
+                    shouldValidate: false, // Disable validation on every change
+                  });
+                }}
+                placeholder="Write your blog content here…"
               />
               {errors.content && (
                 <p className="text-xs text-destructive">

@@ -7,10 +7,26 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { fetchAuthMutation } from "@/lib/auth-server";
 
+// Simple HTML sanitization for Quill content
+function sanitizeQuillHtml(html: string): string {
+  // Quill generates safe HTML, but we'll do basic cleanup
+  // Remove any script tags and event handlers
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/on\w+\s*=\s*[^\s>]*/gi, '');
+}
+
 export async function createPostAction(
-  input: z.infer<typeof createBlogSchema>,
+  formData: FormData,
 ): Promise<Id<"posts">> {
-  const parsedInput = createBlogSchema.safeParse(input);
+  const rawInput = {
+    title: formData.get("title") as string,
+    content: formData.get("content") as string,
+    image: formData.get("image") as File,
+  };
+
+  const parsedInput = createBlogSchema.safeParse(rawInput);
 
   if (!parsedInput.success) {
     throw new Error("Invalid post data.");
@@ -36,7 +52,7 @@ export async function createPostAction(
 
     const postId = await fetchAuthMutation(api.posts.createPost, {
       title: parsedInput.data.title,
-      description: parsedInput.data.content,
+      description: sanitizeQuillHtml(parsedInput.data.content),
       imageStorageId: storageId,
     });
 
