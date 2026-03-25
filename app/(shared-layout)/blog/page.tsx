@@ -30,6 +30,8 @@ export const metadata: Metadata = {
   title: 'Devlog | Blogs',
 }
 
+export const dynamic = "force-static";
+
 export default async function BlogPage({
   searchParams,
 }: {
