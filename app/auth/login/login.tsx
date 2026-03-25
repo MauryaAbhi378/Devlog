@@ -19,7 +19,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
@@ -32,6 +33,13 @@ export default function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
   const router = useRouter();
+  const params = useSearchParams();
+
+  useEffect(() => {
+    if (params.get("message") === "login_required") {
+      toast.error("You must be logged in to create a post.", { id: "login-required" });
+    }
+  }, [params]);
 
   const onSubmit = async (data: LoginFormValues) => {
     const { error } = await authClient.signIn.email({
@@ -83,7 +91,9 @@ export default function LoginForm() {
               {...register("password")}
             />
             {errors.password && (
-              <p className="text-xs text-destructive">{errors.password.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -95,7 +105,10 @@ export default function LoginForm() {
 
       <CardFooter className="justify-center gap-1 pb-4 text-sm text-muted-foreground">
         Don&apos;t have an account?
-        <Link href="/auth/signup" className="text-primary underline-offset-4 hover:underline">
+        <Link
+          href="/auth/signup"
+          className="text-primary underline-offset-4 hover:underline"
+        >
           Sign up
         </Link>
       </CardFooter>
