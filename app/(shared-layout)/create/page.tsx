@@ -1,34 +1,31 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { ChangeEvent, useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import Image from "next/image";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-import { createBlogSchema } from "@/app/schemas/blog"
+import { createBlogSchema } from "@/app/schemas/blog";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
-import { createPostAction } from "@/app/actions"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { createPostAction } from "@/app/actions";
 
-type CreateBlogData = z.infer<typeof createBlogSchema>
+type CreateBlogData = z.infer<typeof createBlogSchema>;
 
 export default function CreatePage() {
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
-  const [imageInputKey, setImageInputKey] = useState(0)
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [imageInputKey, setImageInputKey] = useState(0);
 
   const {
     register,
@@ -38,81 +35,81 @@ export default function CreatePage() {
     formState: { errors, isSubmitting },
   } = useForm<CreateBlogData>({
     resolver: zodResolver(createBlogSchema),
-  })
-  const router = useRouter()
+  });
+  const router = useRouter();
 
   useEffect(() => {
     return () => {
       if (imagePreviewUrl) {
-        URL.revokeObjectURL(imagePreviewUrl)
+        URL.revokeObjectURL(imagePreviewUrl);
       }
-    }
-  }, [imagePreviewUrl])
+    };
+  }, [imagePreviewUrl]);
 
   async function onSubmit(data: CreateBlogData) {
     try {
-      const postId = await createPostAction(data)
+      const postId = await createPostAction(data);
 
       toast.success("Post created!", {
         description: "Your blog article has been published.",
-      })
-      
-      reset()
-      setImageFile(null)
+      });
+
+      reset();
+      setImageFile(null);
       if (imagePreviewUrl) {
-        URL.revokeObjectURL(imagePreviewUrl)
+        URL.revokeObjectURL(imagePreviewUrl);
       }
-      setImagePreviewUrl(null)
-      setImageInputKey((currentKey) => currentKey + 1)
-      router.push(`/blog/${postId}`)
+      setImagePreviewUrl(null);
+      setImageInputKey((currentKey) => currentKey + 1);
+      router.push(`/blog/${postId}`);
     } catch (error) {
       const description =
-        error instanceof Error ? error.message : "Failed to create the post."
+        error instanceof Error ? error.message : "Failed to create the post.";
 
       toast.error("Something went wrong", {
         description,
-      })
+      });
     }
   }
 
   function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0] ?? null
+    const file = event.target.files?.[0] ?? null;
 
     if (imagePreviewUrl) {
-      URL.revokeObjectURL(imagePreviewUrl)
+      URL.revokeObjectURL(imagePreviewUrl);
     }
 
-    setImageFile(file)
+    setImageFile(file);
     if (file) {
-      setImagePreviewUrl(URL.createObjectURL(file))
-      setValue("image", file, { shouldDirty: true, shouldValidate: true })
-      return
+      setImagePreviewUrl(URL.createObjectURL(file));
+      setValue("image", file, { shouldDirty: true, shouldValidate: true });
+      return;
     }
 
-    setImagePreviewUrl(null)
+    setImagePreviewUrl(null);
     setValue("image", undefined as never, {
       shouldDirty: true,
       shouldValidate: true,
-    })
+    });
   }
 
   return (
     <main className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-start px-4 pt-20">
       <div className="mb-10 text-center">
-        <h1 className="text-5xl font-bold tracking-tight">Create Post</h1>
+        <h1 className="text-5xl font-bold tracking-tight">
+          Create Blog Article
+        </h1>
         <p className="mt-3 text-muted-foreground">
           Share your thoughts with the big world
         </p>
       </div>
 
       <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <CardTitle className="text-xl">Create Blog Article</CardTitle>
-          <CardDescription>Create a new blog article</CardDescription>
-        </CardHeader>
-
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-5"
+          >
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="title">Title</Label>
               <Input
@@ -122,7 +119,9 @@ export default function CreatePage() {
                 {...register("title")}
               />
               {errors.title && (
-                <p className="text-xs text-destructive">{errors.title.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.title.message}
+                </p>
               )}
             </div>
 
@@ -170,11 +169,16 @@ export default function CreatePage() {
                 </div>
               )}
               {errors.image && (
-                <p className="text-xs text-destructive">{errors.image.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.image.message}
+                </p>
               )}
               {imageFile && (
                 <div className="rounded-md border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-                  Selected: <span className="font-medium text-foreground">{imageFile.name}</span>
+                  Selected:{" "}
+                  <span className="font-medium text-foreground">
+                    {imageFile.name}
+                  </span>
                 </div>
               )}
             </div>
@@ -193,5 +197,5 @@ export default function CreatePage() {
         </CardContent>
       </Card>
     </main>
-  )
+  );
 }
