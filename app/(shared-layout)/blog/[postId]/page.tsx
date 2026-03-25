@@ -2,16 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchQuery } from "convex/nextjs";
+import { fetchAuthQuery } from "@/lib/auth-server";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
 import CommentSection from "@/components/web/CommentSection";
+import { PostPresence } from "@/components/web/PostPresence";
 
 type BlogDetailPageProps = {
   params: Promise<{
@@ -20,10 +17,10 @@ type BlogDetailPageProps = {
 };
 
 export async function generateMetadata({ params }: BlogDetailPageProps) {
-  const {postId} = await params;
+  const { postId } = await params;
   const blogs = await fetchQuery(api.posts.getBlogs, {});
   const blogIndex = blogs.findIndex((blog) => blog._id === postId);
-  const blog = blogIndex >= 0 ? blogs[blogIndex] : null; 
+  const blog = blogIndex >= 0 ? blogs[blogIndex] : null;
 
   if (!blog) {
     return {
@@ -35,12 +32,14 @@ export async function generateMetadata({ params }: BlogDetailPageProps) {
     title: `Devlog | ${blog.title}`,
     description: blog.description,
   };
-
 }
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { postId } = await params;
   const blogs = await fetchQuery(api.posts.getBlogs, {});
+
+  const userId = await fetchAuthQuery(api.presence.getUserById, {});
+
   const blogIndex = blogs.findIndex((blog) => blog._id === postId);
   const blog = blogIndex >= 0 ? blogs[blogIndex] : null;
 
@@ -76,6 +75,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                 day: "numeric",
               })}
             </span>
+            {userId && <PostPresence roomId={blog._id} userId={userId} />}
           </div>
           <CardTitle className="max-w-3xl text-3xl font-semibold tracking-tight text-balance md:text-5xl">
             {blog.title}
