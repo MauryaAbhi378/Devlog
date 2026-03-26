@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useConvexAuth } from "convex/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "./mode-toggle";
+import { ModeToggle } from "../ui/mode-toggle";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
