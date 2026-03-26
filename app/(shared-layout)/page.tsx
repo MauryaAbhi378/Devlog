@@ -3,6 +3,9 @@ import Link from "next/link";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { ArrowRight } from "lucide-react";
+import { connection } from "next/server";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function getRelativeTime(timestamp: number): string {
   const now = Date.now();
@@ -17,13 +20,7 @@ function getRelativeTime(timestamp: number): string {
   return `${days} DAYS AGO`;
 }
 
-export default async function Home() {
-  const blogs = await fetchQuery(api.posts.getBlogs, {});
-  const featuredBlogs = await fetchQuery(api.posts.getFeaturedBlogs, {
-    limit: 4,
-  });
-  const latestBlogs = blogs.slice(0, 3);
-
+export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -93,222 +90,9 @@ export default async function Home() {
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
-
-          {featuredBlogs.length >= 4 ? (
-            <div className="grid gap-4 md:grid-cols-12 md:grid-rows-2">
-              {/* Top-left - large card with image overlay */}
-              <Link
-                href={`/blog/${featuredBlogs[0]._id}`}
-                className="group relative md:col-span-7 md:row-span-1"
-              >
-                <div className="relative h-full min-h-85 overflow-hidden rounded-xl bg-card">
-                  {featuredBlogs[0].imageUrl && (
-                    <Image
-                      src={featuredBlogs[0].imageUrl}
-                      alt={featuredBlogs[0].title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 58vw"
-                      priority
-                      unoptimized
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-6">
-                    <span className="mb-2 inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                      {new Date(
-                        featuredBlogs[0]._creationTime,
-                      ).toLocaleDateString("en-US", {
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
-                    <h3 className="mb-3 font-serif text-2xl font-normal italic leading-tight text-white md:text-3xl">
-                      {featuredBlogs[0].title}
-                    </h3>
-                    <div className="flex items-center gap-3 text-xs text-white/60">
-                      <span>
-                        BY {featuredBlogs[0].authorName.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Top-right - image on top, text below */}
-              <Link
-                href={`/blog/${featuredBlogs[1]._id}`}
-                className="group md:col-span-5 md:row-span-1"
-              >
-                <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card">
-                  <div className="relative aspect-16/10 overflow-hidden">
-                    {featuredBlogs[1].imageUrl && (
-                      <Image
-                        src={featuredBlogs[1].imageUrl}
-                        alt={featuredBlogs[1].title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, 42vw"
-                        unoptimized
-                      />
-                    )}
-                  </div>
-                  <div className="flex flex-2 flex-col justify-center p-5">
-                    <div className="flex flex-row gap-2 items-center">
-                      <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                      {new Date(
-                        featuredBlogs[1]._creationTime,
-                      ).toLocaleDateString("en-US", {
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
-                      <p className="text-xs">
-                        BY {featuredBlogs[1].authorName.toUpperCase()}
-                      </p>
-                    </div>
-                    <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary md:text-xl">
-                      {featuredBlogs[1].title}
-                    </h3>
-                    <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-xs leading-relaxed text-muted-foreground *:m-0"
-                      dangerouslySetInnerHTML={{
-                        __html: featuredBlogs[1].description,
-                      }}
-                    />
-                  </div>
-                </div>
-              </Link>
-
-              {/* Bottom-left - text on top, image below */}
-              <Link
-                href={`/blog/${featuredBlogs[2]._id}`}
-                className="group md:col-span-5 md:row-span-1"
-              >
-                <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card">
-                  <div className="flex basis-[55%] flex-col justify-center p-5">
-                    <div className="flex flex-row gap-2 items-center mb-2">
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                        {new Date(
-                          featuredBlogs[2]._creationTime,
-                        ).toLocaleDateString("en-US", {
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </span>
-                      <p className="text-xs">
-                        BY {featuredBlogs[2].authorName.toUpperCase()}
-                      </p>
-                    </div>
-                    <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary md:text-xl">
-                      {featuredBlogs[2].title}
-                    </h3>
-                    <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 text-xs leading-relaxed text-muted-foreground *:m-0"
-                      dangerouslySetInnerHTML={{
-                        __html: featuredBlogs[2].description,
-                      }}
-                    />
-                  </div>
-                  <div className="relative basis-[45%] overflow-hidden">
-                    {featuredBlogs[2].imageUrl && (
-                      <Image
-                        src={featuredBlogs[2].imageUrl}
-                        alt={featuredBlogs[2].title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, 42vw"
-                        unoptimized
-                      />
-                    )}
-                  </div>
-                </div>
-              </Link>
-
-              {/* Bottom-right - image on top, text below (reverse of blog 3) */}
-              <Link
-                href={`/blog/${featuredBlogs[3]._id}`}
-                className="group md:col-span-7 md:row-span-1"
-              >
-                <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card">
-                  <div className="relative basis-[45%] overflow-hidden">
-                    {featuredBlogs[3].imageUrl && (
-                      <Image
-                        src={featuredBlogs[3].imageUrl}
-                        alt={featuredBlogs[3].title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, 58vw"
-                        unoptimized
-                      />
-                    )}
-                  </div>
-                  <div className="flex basis-[55%] flex-col justify-center p-5">
-                    <div className="flex flex-row gap-2 items-center mb-2">
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                        {new Date(
-                          featuredBlogs[3]._creationTime,
-                        ).toLocaleDateString("en-US", {
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </span>
-                      <p className="text-xs">
-                        BY {featuredBlogs[3].authorName.toUpperCase()}
-                      </p>
-                    </div>
-                    <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary md:text-xl">
-                      {featuredBlogs[3].title}
-                    </h3>
-                    <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 text-xs leading-relaxed text-muted-foreground *:m-0"
-                      dangerouslySetInnerHTML={{
-                        __html: featuredBlogs[3].description,
-                      }}
-                    />
-                  </div>
-                </div>
-              </Link>
-            </div>
-          ) : (
-            /* Fallback grid for fewer than 4 posts */
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {featuredBlogs.map((blog, index) => (
-                <Link
-                  key={blog._id}
-                  href={`/blog/${blog._id}`}
-                  className="group"
-                >
-                  <div className="overflow-hidden rounded-xl border border-border/40 bg-card">
-                    <div className="relative aspect-video overflow-hidden">
-                      {blog.imageUrl && (
-                        <Image
-                          src={blog.imageUrl}
-                          alt={blog.title}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                          priority={index === 0}
-                          unoptimized
-                        />
-                      )}
-                    </div>
-                    <div className="p-5">
-                      <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary">
-                        {blog.title}
-                      </h3>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(blog._creationTime).toLocaleDateString(
-                          "en-US",
-                          { month: "short", day: "numeric", year: "numeric" },
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
+          <Suspense fallback={<FeaturedArticlesSkeleton />}>
+            <FeaturedArticles />
+          </Suspense>
         </div>
       </section>
 
@@ -330,34 +114,9 @@ export default async function Home() {
             </div>
 
             {/* Right column - blog list */}
-            <div className="flex flex-col divide-y divide-border/40">
-              {latestBlogs.map((blog) => (
-                <Link
-                  key={blog._id}
-                  href={`/blog/${blog._id}`}
-                  className="group flex items-start justify-between gap-6 py-6 first:pt-0 last:pb-0"
-                >
-                  <div className="flex-1">
-                    <span className="mb-1.5 inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                      {new Date(blog._creationTime).toLocaleDateString(
-                        "en-US",
-                        { month: "short", year: "numeric" },
-                      )}
-                    </span>
-                    <h3 className="mb-1.5 text-lg font-semibold leading-tight group-hover:text-primary">
-                      {blog.title}
-                    </h3>
-                    <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 text-sm leading-relaxed text-muted-foreground *:m-0"
-                      dangerouslySetInnerHTML={{ __html: blog.description }}
-                    />
-                  </div>
-                  <span className="shrink-0 pt-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                    {getRelativeTime(blog._creationTime)}
-                  </span>
-                </Link>
-              ))}
-            </div>
+            <Suspense fallback={<LatestUpdatesSkeleton />}>
+              <LatestUpdates />
+            </Suspense>
           </div>
         </div>
       </section>
@@ -400,7 +159,7 @@ export default async function Home() {
             Dev<span className="text-[#c4956a]">Logs</span>
           </Link>
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            &copy; {new Date().getFullYear()} DevLogs. Curating the digital
+            &copy; 2026 DevLogs. Curating the digital
             architecture.
           </p>
           <div className="flex items-center gap-6 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -419,6 +178,286 @@ export default async function Home() {
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+// ── Skeleton loaders ────────────────────────────────────────────────────────
+
+function FeaturedArticlesSkeleton() {
+  return (
+    <div className="grid gap-4 md:grid-cols-12 md:grid-rows-2">
+      <Skeleton className="md:col-span-7 h-85 rounded-xl" />
+      <Skeleton className="md:col-span-5 h-85 rounded-xl" />
+      <Skeleton className="md:col-span-5 h-64 rounded-xl" />
+      <Skeleton className="md:col-span-7 h-64 rounded-xl" />
+    </div>
+  );
+}
+
+function LatestUpdatesSkeleton() {
+  return (
+    <div className="flex flex-col divide-y divide-border/40">
+      {Array.from({ length: 3 }, (_, i) => (
+        <div
+          key={i}
+          className="flex items-start justify-between gap-6 py-6 first:pt-0 last:pb-0"
+        >
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-3 w-20 rounded-full" />
+            <Skeleton className="h-5 w-3/4 rounded-full" />
+            <Skeleton className="h-4 w-full rounded-full" />
+            <Skeleton className="h-4 w-11/12 rounded-full" />
+          </div>
+          <Skeleton className="mt-1 h-3 w-16 shrink-0 rounded-full" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Data components ─────────────────────────────────────────────────────────
+
+async function FeaturedArticles() {
+  await connection();
+  const featuredBlogs = await fetchQuery(api.posts.getFeaturedBlogs, {
+    limit: 4,
+  });
+
+  if (featuredBlogs.length >= 4) {
+    return (
+      <div className="grid gap-4 md:grid-cols-12 md:grid-rows-2">
+        {/* Top-left - large card with image overlay */}
+        <Link
+          href={`/blog/${featuredBlogs[0]._id}`}
+          className="group relative md:col-span-7 md:row-span-1"
+        >
+          <div className="relative h-full min-h-85 overflow-hidden rounded-xl bg-card">
+            {featuredBlogs[0].imageUrl && (
+              <Image
+                src={featuredBlogs[0].imageUrl}
+                alt={featuredBlogs[0].title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 58vw"
+                priority
+                unoptimized
+              />
+            )}
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6">
+              <span className="mb-2 inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
+                {new Date(featuredBlogs[0]._creationTime).toLocaleDateString(
+                  "en-US",
+                  { month: "short", year: "numeric" },
+                )}
+              </span>
+              <h3 className="mb-3 font-serif text-2xl font-normal italic leading-tight text-white md:text-3xl">
+                {featuredBlogs[0].title}
+              </h3>
+              <div className="flex items-center gap-3 text-xs text-white/60">
+                <span>BY {featuredBlogs[0].authorName.toUpperCase()}</span>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        {/* Top-right - image on top, text below */}
+        <Link
+          href={`/blog/${featuredBlogs[1]._id}`}
+          className="group md:col-span-5 md:row-span-1"
+        >
+          <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card">
+            <div className="relative aspect-16/10 overflow-hidden">
+              {featuredBlogs[1].imageUrl && (
+                <Image
+                  src={featuredBlogs[1].imageUrl}
+                  alt={featuredBlogs[1].title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 42vw"
+                  unoptimized
+                />
+              )}
+            </div>
+            <div className="flex flex-2 flex-col justify-center p-5">
+              <div className="flex flex-row gap-2 items-center">
+                <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
+                  {new Date(featuredBlogs[1]._creationTime).toLocaleDateString(
+                    "en-US",
+                    { month: "short", year: "numeric" },
+                  )}
+                </span>
+                <p className="text-xs">
+                  BY {featuredBlogs[1].authorName.toUpperCase()}
+                </p>
+              </div>
+              <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary md:text-xl">
+                {featuredBlogs[1].title}
+              </h3>
+              <div
+                className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-xs leading-relaxed text-muted-foreground *:m-0"
+                dangerouslySetInnerHTML={{ __html: featuredBlogs[1].description }}
+              />
+            </div>
+          </div>
+        </Link>
+
+        {/* Bottom-left - text on top, image below */}
+        <Link
+          href={`/blog/${featuredBlogs[2]._id}`}
+          className="group md:col-span-5 md:row-span-1"
+        >
+          <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card">
+            <div className="flex basis-[55%] flex-col justify-center p-5">
+              <div className="flex flex-row gap-2 items-center mb-2">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
+                  {new Date(featuredBlogs[2]._creationTime).toLocaleDateString(
+                    "en-US",
+                    { month: "short", year: "numeric" },
+                  )}
+                </span>
+                <p className="text-xs">
+                  BY {featuredBlogs[2].authorName.toUpperCase()}
+                </p>
+              </div>
+              <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary md:text-xl">
+                {featuredBlogs[2].title}
+              </h3>
+              <div
+                className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 text-xs leading-relaxed text-muted-foreground *:m-0"
+                dangerouslySetInnerHTML={{ __html: featuredBlogs[2].description }}
+              />
+            </div>
+            <div className="relative basis-[45%] overflow-hidden">
+              {featuredBlogs[2].imageUrl && (
+                <Image
+                  src={featuredBlogs[2].imageUrl}
+                  alt={featuredBlogs[2].title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 42vw"
+                  unoptimized
+                />
+              )}
+            </div>
+          </div>
+        </Link>
+
+        {/* Bottom-right - image on top, text below */}
+        <Link
+          href={`/blog/${featuredBlogs[3]._id}`}
+          className="group md:col-span-7 md:row-span-1"
+        >
+          <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card">
+            <div className="relative basis-[45%] overflow-hidden">
+              {featuredBlogs[3].imageUrl && (
+                <Image
+                  src={featuredBlogs[3].imageUrl}
+                  alt={featuredBlogs[3].title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 58vw"
+                  unoptimized
+                />
+              )}
+            </div>
+            <div className="flex basis-[55%] flex-col justify-center p-5">
+              <div className="flex flex-row gap-2 items-center mb-2">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
+                  {new Date(featuredBlogs[3]._creationTime).toLocaleDateString(
+                    "en-US",
+                    { month: "short", year: "numeric" },
+                  )}
+                </span>
+                <p className="text-xs">
+                  BY {featuredBlogs[3].authorName.toUpperCase()}
+                </p>
+              </div>
+              <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary md:text-xl">
+                {featuredBlogs[3].title}
+              </h3>
+              <div
+                className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 text-xs leading-relaxed text-muted-foreground *:m-0"
+                dangerouslySetInnerHTML={{ __html: featuredBlogs[3].description }}
+              />
+            </div>
+          </div>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {featuredBlogs.map((blog, index) => (
+        <Link key={blog._id} href={`/blog/${blog._id}`} className="group">
+          <div className="overflow-hidden rounded-xl border border-border/40 bg-card">
+            <div className="relative aspect-video overflow-hidden">
+              {blog.imageUrl && (
+                <Image
+                  src={blog.imageUrl}
+                  alt={blog.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority={index === 0}
+                  unoptimized
+                />
+              )}
+            </div>
+            <div className="p-5">
+              <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary">
+                {blog.title}
+              </h3>
+              <span className="text-xs text-muted-foreground">
+                {new Date(blog._creationTime).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+async function LatestUpdates() {
+  await connection();
+  const blogs = await fetchQuery(api.posts.getBlogs, {});
+  const latestBlogs = blogs.slice(0, 3);
+
+  return (
+    <div className="flex flex-col divide-y divide-border/40">
+      {latestBlogs.map((blog) => (
+        <Link
+          key={blog._id}
+          href={`/blog/${blog._id}`}
+          className="group flex items-start justify-between gap-6 py-6 first:pt-0 last:pb-0"
+        >
+          <div className="flex-1">
+            <span className="mb-1.5 inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
+              {new Date(blog._creationTime).toLocaleDateString("en-US", {
+                month: "short",
+                year: "numeric",
+              })}
+            </span>
+            <h3 className="mb-1.5 text-lg font-semibold leading-tight group-hover:text-primary">
+              {blog.title}
+            </h3>
+            <div
+              className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 text-sm leading-relaxed text-muted-foreground *:m-0"
+              dangerouslySetInnerHTML={{ __html: blog.description }}
+            />
+          </div>
+          <span className="shrink-0 pt-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            {getRelativeTime(blog._creationTime)}
+          </span>
+        </Link>
+      ))}
     </div>
   );
 }

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/pagination";
 import { Suspense } from "react";
 import { Metadata } from "next";
+import { connection } from "next/server";
 
 const POSTS_PER_PAGE = 6;
 
@@ -29,19 +30,16 @@ export const metadata: Metadata = {
   title: 'Devlog | Blogs',
 }
 
-export default async function BlogPage({
+export default function BlogPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string }>;
 }) {
-  const { page } = await searchParams;
-  const currentPage = Math.max(1, parseInt(page ?? "1", 10));
-
   return (
     <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8">
       <section className="pb-16 pt-8 md:pb-24 md:pt-12">
-        <Suspense fallback={<BlogListLoader />} key={currentPage}>
-          <ListBlog page={currentPage} />
+        <Suspense fallback={<BlogListLoader />}>
+          <ListBlog searchParams={searchParams} />
         </Suspense>
       </section>
     </div>
@@ -51,7 +49,7 @@ export default async function BlogPage({
 function BlogListLoader() {
   return (
     <div className="mt-10 grid gap-6 md:mt-14 md:grid-cols-2 xl:grid-cols-3">
-      {Array.from({ length: 3 }, (_, index) => (
+      {Array.from({ length: 6 }, (_, index) => (
         <Card
           key={index}
           className="overflow-hidden border border-white/10 bg-card/80 py-0 shadow-xl shadow-black/10 backdrop-blur"
@@ -76,7 +74,10 @@ function BlogListLoader() {
   );
 }
 
-async function ListBlog({ page }: { page: number }) {
+async function ListBlog({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  await connection();
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(pageParam ?? "1", 10));
   const { items: blogs, total } = await fetchQuery(
     api.posts.getPaginatedBlogs,
     { page, limit: POSTS_PER_PAGE },

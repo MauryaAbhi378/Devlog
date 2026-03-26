@@ -48,11 +48,12 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/auth/signup">Sign up</Link>
+              <Button variant="default" size="lg" asChild>
+                <Link href="/auth/signup" className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">Sign up</Link>
               </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/auth/login">Login</Link>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/auth/login"
+                className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">Login</Link>
               </Button>
             </>
           )

@@ -1,9 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useRef, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import "react-quill-new/dist/quill.snow.css";
-import type ReactQuillType from "react-quill-new";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
@@ -27,8 +26,6 @@ export default function RichTextEditor({
   onChange,
   placeholder,
 }: RichTextEditorProps) {
-  const quillRef = useRef<ReactQuillType>(null);
-
   const modules = useMemo(
     () => ({
       toolbar: TOOLBAR_OPTIONS,
@@ -90,7 +87,6 @@ export default function RichTextEditor({
   return (
     <div className="rich-editor">
       <ReactQuill
-        ref={quillRef}
         theme="snow"
         value={value}
         onChange={handleChange}
