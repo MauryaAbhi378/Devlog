@@ -4,9 +4,9 @@ import LoginForm from "./login";
 import LoginLoading from "./loading";
 
 export const metadata: Metadata = {
-  title: 'Devlog | Login',
-  description: 'Login to your Devlog account',
-}
+  title: "Devlog | Login",
+  description: "Login to your Devlog account",
+};
 
 export default function LoginPage() {
   return (
