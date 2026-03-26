@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import { ArrowRight, Rss, Clock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 function getRelativeTime(timestamp: number): string {
   const now = Date.now();
@@ -142,7 +142,7 @@ export default async function Home() {
                       {featuredBlogs[1].title}
                     </h3>
                     <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-xs leading-relaxed text-muted-foreground [&>*]:m-0"
+                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-xs leading-relaxed text-muted-foreground *:m-0"
                       dangerouslySetInnerHTML={{ __html: featuredBlogs[1].description }}
                     />
                     
@@ -164,7 +164,7 @@ export default async function Home() {
                       {featuredBlogs[2].title}
                     </h3>
                     <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-xs leading-relaxed text-muted-foreground [&>*]:m-0"
+                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-xs leading-relaxed text-muted-foreground *:m-0"
                       dangerouslySetInnerHTML={{ __html: featuredBlogs[2].description }}
                     />
                     
@@ -293,7 +293,7 @@ export default async function Home() {
                       {blog.title}
                     </h3>
                     <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-sm leading-relaxed text-muted-foreground [&>*]:m-0"
+                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-sm leading-relaxed text-muted-foreground *:m-0"
                       dangerouslySetInnerHTML={{ __html: blog.description }}
                     />
                   </div>
