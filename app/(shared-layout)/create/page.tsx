@@ -102,7 +102,7 @@ export default function CreatePage() {
   return (
     <main className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-start px-4 pt-20">
       <div className="mb-10 text-center">
-        <h1 className="text-5xl font-bold tracking-tight">
+        <h1 className="font-serif text-5xl font-bold tracking-tight">
           Create Blog Article
         </h1>
         <p className="mt-3 text-muted-foreground">

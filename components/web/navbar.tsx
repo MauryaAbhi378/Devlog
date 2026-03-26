@@ -22,17 +22,17 @@ export function Navbar() {
   return (
     <nav className="flex items-center justify-between px-6 py-4">
       <div className="flex items-center gap-8">
-        <Link href="/" className="text-xl font-bold">
-          Dev<span className="text-blue-500">Logs</span>
+        <Link href="/" className="text-2xl font-serif font-bold">
+          Dev<span className="text-[#c4956a]">Logs</span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/" className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">
             Home
           </Link>
-          <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/blog" className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">
             Blog
           </Link>
-          <Link href="/create" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/create" className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">
             Create
           </Link>
         </div>
@@ -41,7 +41,7 @@ export function Navbar() {
         {!isLoading && (
           isAuthenticated && session?.user ? (
             <>
-              <span className="text-sm font-medium">{session.user.name}</span>
+              <span className="text-base font-serif font-medium">{session.user.name}</span>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 Logout
               </Button>

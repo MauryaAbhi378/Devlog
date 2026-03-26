@@ -48,6 +48,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   }
 
   return (
+    <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8">
     <section className="pb-16 pt-8 md:pb-24 md:pt-12">
       <Card className="overflow-hidden border border-white/10 bg-card/80 py-0 shadow-xl shadow-black/10 backdrop-blur">
         <div className="relative aspect-21/9 min-h-72 w-full overflow-hidden">
@@ -77,7 +78,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
             </span>
             {userId && <PostPresence roomId={blog._id} userId={userId} />}
           </div>
-          <CardTitle className="max-w-3xl text-3xl font-semibold tracking-tight text-balance md:text-5xl">
+          <CardTitle className="max-w-3xl font-serif text-3xl font-semibold tracking-tight text-balance md:text-5xl">
             {blog.title}
           </CardTitle>
         </CardHeader>
@@ -98,5 +99,6 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         </CardContent>
       </Card>
     </section>
+    </div>
   );
 }

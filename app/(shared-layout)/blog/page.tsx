@@ -23,13 +23,11 @@ import {
 import { Suspense } from "react";
 import { Metadata } from "next";
 
-const POSTS_PER_PAGE = 3;
+const POSTS_PER_PAGE = 6;
 
 export const metadata: Metadata = {
   title: 'Devlog | Blogs',
 }
-
-export const dynamic = "force-static";
 
 export default async function BlogPage({
   searchParams,
@@ -40,11 +38,13 @@ export default async function BlogPage({
   const currentPage = Math.max(1, parseInt(page ?? "1", 10));
 
   return (
-    <section className="pb-16 pt-8 md:pb-24 md:pt-12">
-      <Suspense fallback={<BlogListLoader />} key={currentPage}>
-        <ListBlog page={currentPage} />
-      </Suspense>
-    </section>
+    <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8">
+      <section className="pb-16 pt-8 md:pb-24 md:pt-12">
+        <Suspense fallback={<BlogListLoader />} key={currentPage}>
+          <ListBlog page={currentPage} />
+        </Suspense>
+      </section>
+    </div>
   );
 }
 
@@ -123,7 +123,7 @@ async function ListBlog({ page }: { page: number }) {
             </div>
 
             <CardHeader className="flex-1 space-y-3 px-5 pt-5">
-              <CardTitle className="line-clamp-1 text-2xl font-semibold tracking-tight">
+              <CardTitle className="line-clamp-1 font-serif text-2xl font-semibold tracking-tight">
                 {blog.title}
               </CardTitle>
               <div
