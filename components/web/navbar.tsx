@@ -26,38 +26,59 @@ export function Navbar() {
           Dev<span className="text-[#c4956a]">Logs</span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/" className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            href="/"
+            className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors"
+          >
             Home
           </Link>
-          <Link href="/blog" className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            href="/blog"
+            className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors"
+          >
             Blog
           </Link>
-          <Link href="/create" className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            href="/create"
+            className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors"
+          >
             Create
           </Link>
         </div>
       </div>
       <div className="flex items-center gap-2">
-        {!isLoading && (
-          isAuthenticated && session?.user ? (
+        {!isLoading &&
+          (isAuthenticated && session?.user ? (
             <>
-              <span className="text-base font-serif font-medium">{session.user.name}</span>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                Logout
+              <span className="text-base font-serif font-medium text-muted-foreground hover:text-foreground transition-colors">
+                {session.user.name}
+              </span>
+              <Button variant="outline" size="lg" onClick={handleLogout}>
+                <p className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">
+                  Logout
+                </p>
               </Button>
             </>
           ) : (
             <>
               <Button variant="default" size="lg" asChild>
-                <Link href="/auth/signup" className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">Sign up</Link>
+                <Link
+                  href="/auth/signup"
+                  className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Sign up
+                </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="/auth/login"
-                className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors">Login</Link>
+                <Link
+                  href="/auth/login"
+                  className="text-base font-serif text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Login
+                </Link>
               </Button>
             </>
-          )
-        )}
+          ))}
         <ModeToggle />
       </div>
     </nav>
