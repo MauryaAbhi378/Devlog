@@ -19,7 +19,9 @@ function getRelativeTime(timestamp: number): string {
 
 export default async function Home() {
   const blogs = await fetchQuery(api.posts.getBlogs, {});
-  const featuredBlogs = await fetchQuery(api.posts.getFeaturedBlogs, { limit: 4 });
+  const featuredBlogs = await fetchQuery(api.posts.getFeaturedBlogs, {
+    limit: 4,
+  });
   const latestBlogs = blogs.slice(0, 3);
 
   return (
@@ -29,7 +31,6 @@ export default async function Home() {
         <div className="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-24 lg:px-8 lg:py-28">
           <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
             <div className="flex flex-col justify-center">
-              
               <h1 className="font-serif text-5xl font-normal italic leading-[1.05] tracking-tight md:text-6xl lg:text-[5.5rem]">
                 Building the
                 <br />
@@ -49,13 +50,25 @@ export default async function Home() {
                   digital craftsmanship.
                 </p>
                 <div className="mt-6 flex items-center gap-5 text-muted-foreground">
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                   </svg>
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
                     <path d="M12 2L2 19.5h4.5L12 8.5l5.5 11H22L12 2zm0 10l-3 6h6l-3-6z" />
                   </svg>
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
                     <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0L19.2 12l-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
                   </svg>
                 </div>
@@ -103,14 +116,20 @@ export default async function Home() {
                   <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-6">
                     <span className="mb-2 inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                      {new Date(featuredBlogs[0]._creationTime).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                      {new Date(
+                        featuredBlogs[0]._creationTime,
+                      ).toLocaleDateString("en-US", {
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </span>
                     <h3 className="mb-3 font-serif text-2xl font-normal italic leading-tight text-white md:text-3xl">
                       {featuredBlogs[0].title}
                     </h3>
                     <div className="flex items-center gap-3 text-xs text-white/60">
-                      <span>BY {featuredBlogs[0].authorName.toUpperCase()}</span>
-                      
+                      <span>
+                        BY {featuredBlogs[0].authorName.toUpperCase()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -134,18 +153,29 @@ export default async function Home() {
                       />
                     )}
                   </div>
-                  <div className="flex flex-1 flex-col justify-center p-5">
-                    <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                      {new Date(featuredBlogs[1]._creationTime).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                  <div className="flex flex-2 flex-col justify-center p-5">
+                    <div className="flex flex-row gap-2 items-center">
+                      <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
+                      {new Date(
+                        featuredBlogs[1]._creationTime,
+                      ).toLocaleDateString("en-US", {
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </span>
+                      <p className="text-xs">
+                        BY {featuredBlogs[1].authorName.toUpperCase()}
+                      </p>
+                    </div>
                     <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary md:text-xl">
                       {featuredBlogs[1].title}
                     </h3>
                     <div
                       className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-xs leading-relaxed text-muted-foreground *:m-0"
-                      dangerouslySetInnerHTML={{ __html: featuredBlogs[1].description }}
+                      dangerouslySetInnerHTML={{
+                        __html: featuredBlogs[1].description,
+                      }}
                     />
-                    
                   </div>
                 </div>
               </Link>
@@ -157,17 +187,28 @@ export default async function Home() {
               >
                 <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card">
                   <div className="flex basis-[55%] flex-col justify-center p-5">
-                    <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                      {new Date(featuredBlogs[2]._creationTime).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
-                    </span>
+                    <div className="flex flex-row gap-2 items-center mb-2">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
+                        {new Date(
+                          featuredBlogs[2]._creationTime,
+                        ).toLocaleDateString("en-US", {
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                      <p className="text-xs">
+                        BY {featuredBlogs[2].authorName.toUpperCase()}
+                      </p>
+                    </div>
                     <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary md:text-xl">
                       {featuredBlogs[2].title}
                     </h3>
                     <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-xs leading-relaxed text-muted-foreground *:m-0"
-                      dangerouslySetInnerHTML={{ __html: featuredBlogs[2].description }}
+                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 text-xs leading-relaxed text-muted-foreground *:m-0"
+                      dangerouslySetInnerHTML={{
+                        __html: featuredBlogs[2].description,
+                      }}
                     />
-                    
                   </div>
                   <div className="relative basis-[45%] overflow-hidden">
                     {featuredBlogs[2].imageUrl && (
@@ -184,39 +225,47 @@ export default async function Home() {
                 </div>
               </Link>
 
-              {/* Bottom-right - large card with image and text side by side */}
+              {/* Bottom-right - image on top, text below (reverse of blog 3) */}
               <Link
                 href={`/blog/${featuredBlogs[3]._id}`}
                 className="group md:col-span-7 md:row-span-1"
               >
-                <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card md:flex-row">
-                  <div className="relative aspect-16/10 overflow-hidden md:aspect-auto md:w-[45%]">
+                <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card">
+                  <div className="relative basis-[45%] overflow-hidden">
                     {featuredBlogs[3].imageUrl && (
                       <Image
                         src={featuredBlogs[3].imageUrl}
                         alt={featuredBlogs[3].title}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, 30vw"
+                        sizes="(max-width: 768px) 100vw, 58vw"
                         unoptimized
                       />
                     )}
                   </div>
-                  <div className="flex flex-1 flex-col justify-center p-5 md:p-6">
-                    <span className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                      {new Date(featuredBlogs[3]._creationTime).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
-                    </span>
+                  <div className="flex basis-[55%] flex-col justify-center p-5">
+                    <div className="flex flex-row gap-2 items-center mb-2">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
+                        {new Date(
+                          featuredBlogs[3]._creationTime,
+                        ).toLocaleDateString("en-US", {
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                      <p className="text-xs">
+                        BY {featuredBlogs[3].authorName.toUpperCase()}
+                      </p>
+                    </div>
                     <h3 className="mb-2 font-serif text-lg font-normal italic leading-tight group-hover:text-primary md:text-xl">
                       {featuredBlogs[3].title}
                     </h3>
                     <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 mb-3 text-xs text-muted-foreground *:m-0"
-                      dangerouslySetInnerHTML={{ __html: featuredBlogs[3].description }}
+                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 text-xs leading-relaxed text-muted-foreground *:m-0"
+                      dangerouslySetInnerHTML={{
+                        __html: featuredBlogs[3].description,
+                      }}
                     />
-                    
-                    <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                      {new Date(featuredBlogs[3]._creationTime).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-                    </span>
                   </div>
                 </div>
               </Link>
@@ -249,7 +298,10 @@ export default async function Home() {
                         {blog.title}
                       </h3>
                       <span className="text-xs text-muted-foreground">
-                        {new Date(blog._creationTime).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        {new Date(blog._creationTime).toLocaleDateString(
+                          "en-US",
+                          { month: "short", day: "numeric", year: "numeric" },
+                        )}
                       </span>
                     </div>
                   </div>
@@ -287,13 +339,16 @@ export default async function Home() {
                 >
                   <div className="flex-1">
                     <span className="mb-1.5 inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-[#c4956a]">
-                      {new Date(blog._creationTime).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                      {new Date(blog._creationTime).toLocaleDateString(
+                        "en-US",
+                        { month: "short", year: "numeric" },
+                      )}
                     </span>
                     <h3 className="mb-1.5 text-lg font-semibold leading-tight group-hover:text-primary">
                       {blog.title}
                     </h3>
                     <div
-                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-2 text-sm leading-relaxed text-muted-foreground *:m-0"
+                      className="prose prose-sm prose-neutral dark:prose-invert line-clamp-3 text-sm leading-relaxed text-muted-foreground *:m-0"
                       dangerouslySetInnerHTML={{ __html: blog.description }}
                     />
                   </div>
@@ -345,7 +400,8 @@ export default async function Home() {
             Dev<span className="text-[#c4956a]">Logs</span>
           </Link>
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            &copy; {new Date().getFullYear()} DevLogs. Curating the digital architecture.
+            &copy; {new Date().getFullYear()} DevLogs. Curating the digital
+            architecture.
           </p>
           <div className="flex items-center gap-6 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
             <a href="#" className="transition-colors hover:text-foreground">
