@@ -7,8 +7,14 @@ export default defineSchema({
     description: v.string(),
     authorId: v.string(),
     imageStorageId: v.id("_storage"),
-  }),
-  
+  })
+    .searchIndex("search_title", {
+      searchField: "title",
+    })
+    .searchIndex("search_description", {
+      searchField: "description",
+    }),
+
   comments: defineTable({
     postId: v.id("posts"),
     authorId: v.string(),

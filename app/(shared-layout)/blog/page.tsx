@@ -23,6 +23,7 @@ import {
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { connection } from "next/server";
+import { SearchForm } from "@/components/web/SearchForm";
 
 const POSTS_PER_PAGE = 6;
 
@@ -33,11 +34,14 @@ export const metadata: Metadata = {
 export default function BlogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; search?: string }>;
 }) {
   return (
     <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8">
       <section className="pb-16 pt-8 md:pb-24 md:pt-12">
+        <Suspense>
+          <SearchForm />
+        </Suspense>
         <Suspense fallback={<BlogListLoader />}>
           <ListBlog searchParams={searchParams} />
         </Suspense>
@@ -74,14 +78,22 @@ function BlogListLoader() {
   );
 }
 
-async function ListBlog({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+async function ListBlog({ searchParams }: { searchParams: Promise<{ page?: string; search?: string }> }) {
   await connection();
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, search } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10));
-  const { items: blogs, total } = await fetchQuery(
-    api.posts.getPaginatedBlogs,
-    { page, limit: POSTS_PER_PAGE },
-  );
+  const searchTerm = search?.trim() ?? "";
+
+  const { items: blogs, total } = searchTerm
+    ? await fetchQuery(api.posts.searchBlogs, {
+        search: searchTerm,
+        page,
+        limit: POSTS_PER_PAGE,
+      })
+    : await fetchQuery(api.posts.getPaginatedBlogs, {
+        page,
+        limit: POSTS_PER_PAGE,
+      });
 
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
 
@@ -100,8 +112,30 @@ async function ListBlog({ searchParams }: { searchParams: Promise<{ page?: strin
     return pages;
   };
 
+  if (blogs.length === 0) {
+    return (
+      <div className="mt-10 flex flex-col items-center justify-center py-20 text-center md:mt-14">
+        <p className="text-lg font-medium text-muted-foreground">
+          {searchTerm
+            ? `No blogs found for "${searchTerm}"`
+            : "No blogs found"}
+        </p>
+        {searchTerm && (
+          <Button asChild variant="outline" className="mt-4">
+            <Link href="/blog">Clear search</Link>
+          </Button>
+        )}
+      </div>
+    );
+  }
+
   return (
     <>
+      {searchTerm && (
+        <p className="mt-6 text-sm text-muted-foreground">
+          Showing {total} result{total !== 1 ? "s" : ""} for &ldquo;{searchTerm}&rdquo;
+        </p>
+      )}
       <div className="mt-10 grid gap-6 md:mt-14 md:grid-cols-2 xl:grid-cols-3">
         {blogs.map((blog, index) => (
           <Card
@@ -148,7 +182,7 @@ async function ListBlog({ searchParams }: { searchParams: Promise<{ page?: strin
             <PaginationContent>
               {page > 1 && (
                 <PaginationItem>
-                  <PaginationPrevious href={`?page=${page - 1}`} />
+                  <PaginationPrevious href={`?${new URLSearchParams({ ...(searchTerm ? { search: searchTerm } : {}), page: String(page - 1) })}`} />
                 </PaginationItem>
               )}
 
@@ -160,7 +194,7 @@ async function ListBlog({ searchParams }: { searchParams: Promise<{ page?: strin
                 ) : (
                   <PaginationItem key={pageNum}>
                     <PaginationLink
-                      href={`?page=${pageNum}`}
+                      href={`?${new URLSearchParams({ ...(searchTerm ? { search: searchTerm } : {}), page: String(pageNum) })}`}
                       isActive={pageNum === page}
                     >
                       {pageNum}
@@ -171,7 +205,7 @@ async function ListBlog({ searchParams }: { searchParams: Promise<{ page?: strin
 
               {page < totalPages && (
                 <PaginationItem>
-                  <PaginationNext href={`?page=${page + 1}`} />
+                  <PaginationNext href={`?${new URLSearchParams({ ...(searchTerm ? { search: searchTerm } : {}), page: String(page + 1) })}`} />
                 </PaginationItem>
               )}
             </PaginationContent>

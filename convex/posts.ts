@@ -75,6 +75,56 @@ export const getPaginatedBlogs = query({
   },
 });
 
+export const searchBlogs = query({
+  args: {
+    search: v.string(),
+    page: v.number(),
+    limit: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const titleResults = await ctx.db
+      .query("posts")
+      .withSearchIndex("search_title", (q) => q.search("title", args.search))
+      .collect();
+
+    const descResults = await ctx.db
+      .query("posts")
+      .withSearchIndex("search_description", (q) =>
+        q.search("description", args.search),
+      )
+      .collect();
+
+    // Merge and deduplicate by _id, preserving title-match priority
+    const seen = new Set<string>();
+    const merged = [];
+    for (const post of [...titleResults, ...descResults]) {
+      if (!seen.has(post._id)) {
+        seen.add(post._id);
+        merged.push(post);
+      }
+    }
+
+    const total = merged.length;
+    const skip = (args.page - 1) * args.limit;
+    const paginated = merged.slice(skip, skip + args.limit);
+
+    const items = await Promise.all(
+      paginated.map(async (post) => {
+        const author = await authComponent.getAnyUserById(ctx, post.authorId);
+        return {
+          ...post,
+          imageUrl: post.imageStorageId
+            ? await ctx.storage.getUrl(post.imageStorageId)
+            : null,
+          authorName: author?.name ?? "Unknown",
+        };
+      }),
+    );
+
+    return { items, total };
+  },
+});
+
 export const getFeaturedBlogs = query({
   args: {
     limit: v.optional(v.number()),
