@@ -31,32 +31,8 @@ export default function RichTextEditor({
       toolbar: TOOLBAR_OPTIONS,
       clipboard: {
         matchVisual: false,
-        // Better paste handling to prevent freezing
-        matchers: [
-          [
-            1, // Node.ELEMENT_NODE
-            (node: Element, delta: any) => {
-              // Strip out problematic formatting on paste
-              const plaintext = node.textContent || "";
-              return delta.compose({ ops: [{ insert: plaintext }] });
-            },
-          ],
-        ],
       },
-      keyboard: {
-        bindings: {
-          // Fix quote handling
-          smartQuote: {
-            key: 222, // Quote key
-            handler: function (this: any, range: any) {
-              const quill = this.quill;
-              quill.insertText(range.index, '"', "user");
-              quill.setSelection(range.index + 1);
-              return false;
-            },
-          },
-        },
-      },
+
     }),
     [],
   );
